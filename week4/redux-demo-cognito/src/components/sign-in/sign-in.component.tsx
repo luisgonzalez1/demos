@@ -1,6 +1,6 @@
 
 import * as React from 'react';
-import { environment } from '../../environment';
+import * as awsCognito from 'amazon-cognito-identity-js';
 
 export class SignInComponent extends React.Component<any, any> {
 
@@ -22,32 +22,73 @@ export class SignInComponent extends React.Component<any, any> {
   public submit = (e: any) => {
     e.preventDefault();
     const { username, password } = this.props; // destructuring
-    fetch(environment.context + 'users/login', {
-      body: JSON.stringify({username, password}),
-      credentials: 'include',
-      headers: {
-        'content-type': 'application/json'
+    const credentials = { username, password };
+
+    const authenticationData = {
+      Password: credentials.password,
+      Username: credentials.username,
+    };
+    const authenticationDetails = new awsCognito.AuthenticationDetails(authenticationData);
+    const poolData = {
+      ClientId: 'btajb4q70ikvmhb12jo6oo03e', // Your client id here
+      UserPoolId: 'us-west-2_rwVFefjCF', // Your user pool id here
+    };
+    const userPool = new awsCognito.CognitoUserPool(poolData);
+    const userData = {
+      Pool: userPool,
+      Username: credentials.username,
+    };
+    const cognitoUser = new awsCognito.CognitoUser(userData);
+    cognitoUser.authenticateUser(authenticationDetails, {
+      onSuccess: (result) => {
+        const token = result.getIdToken().getJwtToken();
+        localStorage.setItem('token', token);
+        // console.log(userPool.getCurrentUser());
+        // console.log(result.getIdToken().decodePayload())
+        // const idtok: any = result.getIdToken();
+        // console.log(idtok.payload['cognito:groups']) //payload has the user info on it
+
+        // navigate pages now that we have successfully logged in
+        this.props.history.push('/movies');
       },
-      method: 'POST'
-    })
-      .then(resp => {
-        console.log(resp.status)
-        if (resp.status === 401) {
-          this.props.updateError('Invalid Credentials, try again.')
-          return;
+
+      onFailure: (err) => {
+        console.log(err);
+        if (err.code === 'UserNotFoundException' || err.code === 'NotAuthorizedException') {
+          this.props.updateError('Invalid Credentials, try again.');
+        } else {
+          this.props.updateError('Unable to login at this time, please try again later');
         }
-        if (resp.status === 200) {
-          return resp.json();
-        }
-        return;
-      })
-      .then(data => {
-        console.log(data);
-        this.props.history.push('/clicker');
-      })
-      .catch(err => {
-        this.props.updateError('Unable to log in at this time, please try again later');
-      })
+      },
+
+    });
+
+    // fetch(environment.context + 'users/login', {
+    //   body: JSON.stringify({username, password}),
+    //   credentials: 'include',
+    //   headers: {
+    //     'content-type': 'application/json'
+    //   },
+    //   method: 'POST'
+    // })
+    //   .then(resp => {
+    //     console.log(resp.status)
+    //     if (resp.status === 401) {
+    //       this.props.updateError('Invalid Credentials, try again.')
+    //       return;
+    //     }
+    //     if (resp.status === 200) {
+    //       return resp.json();
+    //     }
+    //     return;
+    //   })
+    //   .then(data => {
+    //     console.log(data);
+    //     this.props.history.push('/clicker');
+    //   })
+    //   .catch(err => {
+    //     this.props.updateError('Unable to log in at this time, please try again later');
+    //   })
   }
 
   public render() {
