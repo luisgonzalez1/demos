@@ -37,12 +37,15 @@ export class SignInComponent extends React.Component<any, any> {
 
     // navigate pages now that we have successfully logged in
     this.props.history.push('/movies');
+    this.props.resetState();
   }
 
   public onFailure = (err: any) => {
     console.log(err);
     if (err.code === 'UserNotFoundException' || err.code === 'NotAuthorizedException') {
       this.props.updateError('Invalid Credentials, try again.');
+    } else if (err.code === 'PasswordResetRequiredException') {
+      this.props.resetPassword(this.props.password);
     } else {
       this.props.updateError('Unable to login at this time, please try again later');
     }
@@ -68,23 +71,10 @@ export class SignInComponent extends React.Component<any, any> {
       Username: credentials.username,
     };
     const cognitoUser = new awsCognito.CognitoUser(userData);
+    this.props.updateCognitoUser(cognitoUser);
     cognitoUser.authenticateUser(authenticationDetails, {
       newPasswordRequired: (userAttributes, requiredAttributes) => {
         this.props.setFirstSignin(true);
-        this.props.updateCognitoUser(cognitoUser);
-        // User was signed up by an admin and must provide new 
-        // password and required attributes, if any, to complete 
-        // authentication.
-
-        // userAttributes: object, which is the user's current profile. It will list all attributes that are associated with the user. 
-        // Required attributes according to schema, which don’t have any values yet, will have blank values.
-        // requiredAttributes: list of attributes that must be set by the user along with new password to complete the sign-in.
-
-
-        // Get these details and call 
-        // newPassword: password that user has given
-        // attributesData: object with key as attribute name and value that the user has given.
-
       },
       onFailure: this.onFailure,
       onSuccess: this.onSuccess,
@@ -95,19 +85,36 @@ export class SignInComponent extends React.Component<any, any> {
 
   public submitNewPassword = (e: any) => {
     e.preventDefault();
-    const {password, passwordConfirmation} = this.props.firstSignIn;
+    alert(this.props.firstSignIn.code)
+    const { password, passwordConfirmation } = this.props.firstSignIn;
     if (password !== passwordConfirmation) {
       alert('passwords do not match');
       return;
     }
-    const user: awsCognito.CognitoUser = this.props.cognito.user;
-    user.getUserAttributes((attributes) => {
-      user.completeNewPasswordChallenge(this.props.firstSignIn.password, attributes, {
-        onFailure: this.onFailure,
-        onSuccess: this.onSuccess,
+    if (this.props.firstSignIn.code) {
+     
+      const user: awsCognito.CognitoUser = this.props.cognito.user;
+      user.confirmPassword(this.props.firstSignIn.code, password, {
+        onFailure: (error: Error) => {
+          console.log(error)
+          alert('invalid code');
+          this.props.resetState();
+        },
+        onSuccess: () => {
+          this.props.resetState();
+        }
+      });
+      return;
+    } else {
+      const user: awsCognito.CognitoUser = this.props.cognito.user;
+      user.getUserAttributes((attributes) => {
+        user.completeNewPasswordChallenge(password, attributes, {
+          onFailure: this.onFailure,
+          onSuccess: this.onSuccess,
+        })
       })
-    })
 
+    }
   }
 
   public render() {

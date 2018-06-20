@@ -53,3 +53,19 @@ export const setFirstSignin = (isFirstSignIn: boolean) => {
     type: signInTypes.SET_FIRST_SIGNIN
   }
 }
+
+export const resetPassword = (code: string) => {
+  return {
+    payload: {
+      code
+    },
+    type: signInTypes.RESET_PASSWORD
+  }
+}
+
+export const resetState = () => {
+  return {
+    type: signInTypes.RESET_STATE
+  }
+}
+

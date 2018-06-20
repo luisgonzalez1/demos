@@ -4,6 +4,7 @@ import { signInTypes } from '../actions/sign-in/sign-in.types';
 const initialState: ISignIn = {
   errorMessage: '',
   firstSignIn: {
+    code: '',
     isFirstSignIn: false,
     password: '',
     passwordConfirmation: ''
@@ -14,6 +15,18 @@ const initialState: ISignIn = {
 
 export const signInReducer = (state = initialState, action: any) => {
   switch (action.type) {
+    case signInTypes.RESET_PASSWORD:
+      return {
+        ...state,
+        firstSignIn: {
+          code: action.payload.code,
+          isFirstSignIn: true,
+          password: '',
+          passwordConfirmation: ''
+        }
+      }
+    case signInTypes.RESET_STATE:
+      return initialState;
     case signInTypes.UPDATE_ERROR:
       return {
         ...state,

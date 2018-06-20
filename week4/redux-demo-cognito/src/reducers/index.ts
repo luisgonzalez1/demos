@@ -15,6 +15,7 @@ export interface ICognitoUser {
 
 export interface ISignIn {
   firstSignIn: {
+    code: string,
     isFirstSignIn: boolean,
     password: string,
     passwordConfirmation: string

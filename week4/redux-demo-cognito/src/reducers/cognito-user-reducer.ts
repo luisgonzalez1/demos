@@ -11,6 +11,5 @@ export const cognitoUserReducer = (state = initialState, action: any) => {
         user: action.payload.user
       };
   }
-
   return state;
 };
