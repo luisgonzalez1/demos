@@ -85,7 +85,6 @@ export class SignInComponent extends React.Component<any, any> {
 
   public submitNewPassword = (e: any) => {
     e.preventDefault();
-    alert(this.props.firstSignIn.code)
     const { password, passwordConfirmation } = this.props.firstSignIn;
     if (password !== passwordConfirmation) {
       alert('passwords do not match');
