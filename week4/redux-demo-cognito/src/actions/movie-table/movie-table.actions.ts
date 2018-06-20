@@ -1,5 +1,6 @@
 import { movieTableTypes } from "./movie-table.types";
 import { environment } from "../../environment";
+import { demoApiAxios } from "../../interceptors/demo-api-axios";
 
 
 export const updateYear = (year: number) => {
@@ -12,24 +13,16 @@ export const updateYear = (year: number) => {
 }
 
 export const updateMovies = (year: number) => (dispatch: any) => {
-  fetch(environment.context + 'movies/year/' + year, {credentials: 'include'})
-    .then(resp => {
-      console.log(resp.status)
-      if(resp.status === 401 || resp.status === 403) {
-        throw new Error('Invalid permissions');
-      }
-      return resp.json();
-    })
-    .then((movies) => {
+  demoApiAxios.get(environment.context + 'movies/year/' + year)
+    .then( resp => {
       dispatch({
         payload: {
-          movies
+          movies: resp.data
         },
-        type: movieTableTypes.UPDATE_MOVIES,
+        type: movieTableTypes.UPDATE_MOVIES
       })
     })
     .catch(err => {
       console.log(err);
     });
-
 }

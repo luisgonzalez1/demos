@@ -1,5 +1,5 @@
 const dev = {
-  context: 'http://localhost:3001/'
+  context: 'https://gux4yz5vee.execute-api.us-west-2.amazonaws.com/dev/'
 }
 
 const prod = {

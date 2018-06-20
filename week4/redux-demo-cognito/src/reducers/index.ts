@@ -6,8 +6,19 @@ import { Movie } from "../model/Movie";
 import { movieTableReducer } from "./movie-table.reducer";
 import { chuckNorrisReducer } from "./chuck-norris.reducer";
 import { pokemonReducer } from "./pokemon.reducer";
+import { CognitoUser } from "amazon-cognito-identity-js";
+import { cognitoUserReducer } from "./cognito-user-reducer";
+
+export interface ICognitoUser { 
+  user: CognitoUser | null
+}
 
 export interface ISignIn {
+  firstSignIn: {
+    isFirstSignIn: boolean,
+    password: string,
+    passwordConfirmation: string
+  },
   username: string,
   password: string,
   errorMessage: string
@@ -39,6 +50,7 @@ export interface IState {
   clicker: {
     clicks: number
   },
+  cognitoUser: ICognitoUser,
   ticTacToe: ITicTacToeState,
   signIn: ISignIn,
   movieTable: IMovieTable,
@@ -48,6 +60,7 @@ export interface IState {
 export const state = combineReducers<IState>({
   chuckNorris: chuckNorrisReducer,
   clicker: clickerReducer,
+  cognitoUser: cognitoUserReducer,
   movieTable: movieTableReducer,
   pokemon: pokemonReducer,
   signIn: signInReducer,
