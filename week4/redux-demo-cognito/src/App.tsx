@@ -15,6 +15,7 @@ import { MovieTableContainer } from './components/movies-table/movies.container'
 import { ChuckNorrisContainer } from './components/chuck-norris/chuck-norris.container';
 import { NestedComponent } from './components/nested/nested.component';
 import { PokemonContainer } from './components/pokemon/pokemon.container';
+import { MovieImageUploaderComponent } from './components/movie-images/movie-image-uploader.component';
 
 class App extends React.Component<any, any> {
 
@@ -34,6 +35,7 @@ class App extends React.Component<any, any> {
               <Route path="/chuck-norris" component={ChuckNorrisContainer} />
               <Route path="/nested" component={NestedComponent} />
               <Route path="/pokemon" component={PokemonContainer} />
+              <Route path="/movie-image-upload" component={MovieImageUploaderComponent} />
               <Route component={FirstComponent} />
             </Switch>
           </div>
