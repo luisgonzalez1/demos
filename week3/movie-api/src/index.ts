@@ -46,6 +46,11 @@ app.use((req, resp, next) => {
   next();
 });
 
+// Enpoint just to test
+app.get('/test-endpoint', (req, res) => {
+  res.json({content: 'hello'});
+});
+
 /*******************************************************************************
  * ROUTERS
  *******************************************************************************/
@@ -55,6 +60,8 @@ app.use('/users', userRouter);
 
 
 // start up the app
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`App is running at http://localhost:${app.get('port')}`);
 });
+
+module.exports = server;
