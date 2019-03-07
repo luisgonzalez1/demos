@@ -6,8 +6,9 @@
   "scripts": {
     "start": "nodemon --exec ts-node src/index.ts",
     "deploy": "ts-node src/index.ts",
-    "lint": "tslint --project .",
-    "test": "tsc && cucumber-js src/bdd/features -r src/bdd/steps"
+    "gulp-zip":"./node_modules/.bin/gulp default",
+    "gulp": "./node_modules/.bin/gulp build",
+    "build": "tsc && npm run gulp-zip && npm run gulp"
   },
   "author": "blake",
   "license": "ISC",
